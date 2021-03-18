@@ -1,0 +1,10 @@
+name = "FluxBench"
+uuid = "30fa118d-bc3d-4e0f-90fc-1d9086cecc36"
+authors = ["dhairyagandhi <dhairya@juliacopmuting.com>"]
+version = "0.1.0"
+
+[deps]
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+Metalhead = "dbeba491-748d-5e0e-a39e-b530a07fa0cc"
+TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
