@@ -8,8 +8,8 @@ function fw(m, ip)
     CUDA.@sync m(ip)
 end
 
-function benchmark_cu(io, batchsize = 64)
-  resnet = ResNet()
+function benchmark_cu(io, model, batchsize = 64)
+  resnet = model
   ip = rand(Float32, 224, 224, 3, batchsize)
 
   # gresnet = resnet |> gpu
@@ -29,8 +29,8 @@ function bw(m, ip)
   gs = CUDA.@sync gradient((m, x) -> sum(m(x)), m, ip)
 end
 
-function benchmark_bw_cu(io, batchsize = 64)
-  resnet = ResNet()
+function benchmark_bw_cu(io, model, batchsize = 64)
+  resnet = model
   ip = rand(Float32, 224, 224, 3, batchsize)
 
   # gresnet = resnet |> gpu
@@ -47,15 +47,15 @@ function benchmark_bw_cu(io, batchsize = 64)
 end
 
 function bench()
-  for n in (5, 15, 32, 64, 96)
+  for model in MODELS, n in (5, 15, 32, 64, 96)
     filename = "bench.txt"
     to = TimerOutput()
     open(filename, "w") do io
-      benchmark_bw_cu(io, n)
+      benchmark_bw_cu(io, model(), n)
     end
   
     open(filename, "w") do io
-      benchmark_cu(io, n)
+      benchmark_cu(io, model(), n)
     end
   end
 end
