@@ -3,7 +3,9 @@ module FluxBench
 using Flux, Metalhead
 using BenchmarkTools, TimerOutputs
 
-MODELS = (ResNet, DenseNet, GoogleNet, VGG19, SqueezeNet)
+const MODELS = (ResNet, DenseNet, GoogleNet, VGG19, SqueezeNet)
+
+include("benchmarkutils.jl")
 include("bench.jl")
 
 end # module
