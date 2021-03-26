@@ -17,7 +17,7 @@ steps:
         # push!(LOAD_PATH, @__DIR__)
         println("Starting Benchmarks")
         using FluxBench
-        FluxBench.main()'
+        FluxBench.bench()'
     agents:
       queue: "benchmark"
       cuda: "*"
