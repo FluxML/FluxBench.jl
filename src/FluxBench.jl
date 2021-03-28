@@ -2,8 +2,11 @@ module FluxBench
 
 using Flux, Metalhead
 using BenchmarkTools, TimerOutputs
+using HTTP, JSON
 
 const MODELS = (ResNet, DenseNet, GoogleNet, VGG19, SqueezeNet)
+
+SUITE = BenchmarkGroup()
 
 include("benchmarkutils.jl")
 include("bench.jl")
