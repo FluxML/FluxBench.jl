@@ -1,6 +1,6 @@
 using Flux, Flux.CUDA
 
-real_run = get(ENV, "CODESPEED_BRANCH", nothing) == "master"
+const REAL_RUN = get(ENV, "CODESPEED_BRANCH", nothing) == "master"
 
 # convenience macro to create a benchmark that requires synchronizing the GPU
 macro async_benchmarkable(ex...)
