@@ -1,14 +1,17 @@
 module FluxBench
 
-using Flux, Metalhead
+using Flux, Metalhead, ObjectDetector
 using BenchmarkTools, TimerOutputs
-using HTTP, JSON
+using HTTP, JSON, FileIO
+using Flux.CUDA
+# using Torch - If we want to compare progress
 
 const MODELS = (ResNet, DenseNet, GoogleNet, VGG19, SqueezeNet)
 
 SUITE = BenchmarkGroup()
 
 include("benchmarkutils.jl")
+include("packages/objectdetector.jl")
 include("bench.jl")
 
 results = run(SUITE, verbose = true)

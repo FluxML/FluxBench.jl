@@ -1,7 +1,3 @@
-using BenchmarkTools, TimerOutputs
-using Flux.CUDA
-# using Torch - If we want to compare progress
-
 # CUDA.device!(3)
 
 group = addgroup!(SUITE, "Metalhead")
@@ -55,9 +51,15 @@ function bench()
     # open(filename, "w") do io
       benchmark_bw_cu(io, model(), n)
     # end
-  
+
     # open(filename, "w") do io
       benchmark_cu(io, model(), n)
     # end
+  end
+
+  for model in [ObjectDetector.YOLO.v3_608_COCO, ObjectDetector.v3_tiny_416_COCO]
+    for batchsize in [1, 3]
+      objectdetector_add_yolo_fw(model=model, batchsize=batchsize)
+    end
   end
 end
