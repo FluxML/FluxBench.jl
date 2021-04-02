@@ -1,6 +1,7 @@
 module FluxBench
 
-using Flux, Metalhead, ObjectDetector
+using Flux, Metalhead, ObjectDetector, DiffEqFlux
+using OrdinaryDiffEq, StochasticDiffEq
 using BenchmarkTools, TimerOutputs
 using HTTP, JSON, FileIO
 using Flux.CUDA
@@ -12,6 +13,7 @@ SUITE = BenchmarkGroup()
 
 include("benchmarkutils.jl")
 include("packages/objectdetector.jl")
+include("packages/diffeqflux.jl")
 include("bench.jl")
 
 results = run(SUITE, verbose = true)
