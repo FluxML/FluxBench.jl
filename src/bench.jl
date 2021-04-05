@@ -50,16 +50,21 @@ function bench()
   end
 
   # ObjectDetector
-  for model in [ObjectDetector.YOLO.v3_608_COCO, ObjectDetector.v3_tiny_416_COCO]
-    for batchsize in [1, 3]
-      objectdetector_add_yolo_fw(model=model, batchsize=batchsize)
-    end
+  for model in [ObjectDetector.YOLO.v3_608_COCO, ObjectDetector.v3_tiny_416_COCO], batchsize in [1, 3]
+    objectdetector_add_yolo_fw(model = model, batchsize = batchsize)
   end
 
   # DiffEqFlux
   ## NeuralODE
-  for tol in [1f-3, 1f-5, 1f-8], b in (4, 16, 64, 256)
-    solver = Tsit5() if tol > 1f-8 else Vern7()
-    diffeqflux_add_neuralode(tol, tol, solver, b)
+  for tol in (1f-3, 1f-5, 1f-8), b in (4, 16, 64, 256)
+    diffeqflux_add_neuralode(tol, tol, tol > 1f-8 ? Tsit5() : Vern7(), b)
+  end
+  ## NeuralSDE
+  for b in (4, 16, 64), traj in (1, 10, 32)
+    diffeqflux_add_neuralsde(b, traj)
+  end
+  ## FFJORD
+  for b in (4, 16, 64, 256), ndims in (2, 4, 8)
+    diffeqflux_add_ffjord(b, ndims)
   end
 end

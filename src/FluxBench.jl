@@ -1,10 +1,12 @@
 module FluxBench
 
 using Flux, Metalhead, ObjectDetector, DiffEqFlux
-using OrdinaryDiffEq, StochasticDiffEq
+using OrdinaryDiffEq, StochasticDiffEq, Distributions
 using BenchmarkTools, TimerOutputs
 using HTTP, JSON, FileIO
 using Flux.CUDA
+using Statistics
+using Zygote
 # using Torch - If we want to compare progress
 
 const MODELS = (ResNet, DenseNet, GoogleNet, VGG19, SqueezeNet)
