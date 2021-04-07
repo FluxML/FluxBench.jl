@@ -39,3 +39,13 @@ function flatten(results, prefix = "")
     end
   end
 end
+
+# Do a forward pass
+function fw(m, ip)
+    CUDA.@sync m(ip)
+end
+
+# Do a forward + backward pass
+function bw(m, ip)
+  gs = CUDA.@sync gradient((m, x) -> sum(m(x)), m, ip)
+end
