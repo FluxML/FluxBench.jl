@@ -1,8 +1,8 @@
 steps:
-  -  label: "Benchmarks"
+  - label: "Benchmarks"
     plugins:
       - JuliaCI/julia#v1:
-          version: 1.6
+        version: 1.6
     env:
       CODESPEED_PROJECT: "$BUILDKITE_PIPELINE_NAME"
       CODESPEED_BRANCH: "$BUILDKITE_BRANCH"
