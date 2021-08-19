@@ -2,7 +2,7 @@ steps:
   - label: "Benchmarks"
     plugins:
       - JuliaCI/julia#v1:
-        version: 1.6
+          version: 1.6
     env:
       CODESPEED_PROJECT: "$BUILDKITE_PIPELINE_NAME"
       CODESPEED_BRANCH: "$BUILDKITE_BRANCH"
@@ -14,12 +14,12 @@ steps:
         println("Preparing Environment")
         using Pkg
         Pkg.activate()
-        pkg"add Flux#$(BUILDKITE_COMMIT)"
+        # pkg"add Flux#$(BUILDKITE_COMMIT)"
         Pkg.instantiate()
         # push!(LOAD_PATH, @__DIR__)
         println("Starting Benchmarks")
         using FluxBench
-        FluxBench.bench()'
+        FluxBench.submit()'
     agents:
       queue: "benchmark"
       cuda: "*"
