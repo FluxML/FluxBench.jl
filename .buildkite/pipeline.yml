@@ -13,8 +13,8 @@ steps:
         ENV["CODESPEED_ENVIRONMENT"] = ENV["BUILDKITE_AGENT_NAME"]
         println("Preparing Environment")
         using Pkg
-        push!(LOAD_PATH, @__DIR__)
-        Pkg.activate()
+        # push!(LOAD_PATH, @__DIR__)
+        # Pkg.activate()
         # pkg"add Flux#$(BUILDKITE_COMMIT)"
         Pkg.instantiate()
         println("Starting Benchmarks")
