@@ -28,6 +28,7 @@ function submit(SUITE = SUITE)
   flat_results = flatten(results)
 
   print(JSON.json(flat_results))
+  println()
   HTTP.post("$(ENV["CODESPEED_SERVER"])/result/add/json/",
             ["Content-Type" => "application/x-www-form-urlencoded"],
             HTTP.URIs.escapeuri(Dict("json" => JSON.json(flat_results))))
