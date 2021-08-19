@@ -16,7 +16,7 @@ steps:
         Pkg.activate()
         # pkg"add Flux#$(BUILDKITE_COMMIT)"
         Pkg.instantiate()
-        # push!(LOAD_PATH, @__DIR__)
+        push!(LOAD_PATH, @__DIR__)
         println("Starting Benchmarks")
         using FluxBench
         FluxBench.submit()'
