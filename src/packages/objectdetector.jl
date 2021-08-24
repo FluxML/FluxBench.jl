@@ -9,7 +9,7 @@ function objectdetector_add_yolo_fw(model = YOLO.v3_608_COCO, batchsize = 1)
     batch[:,:,:,i] = img_resize # Send resized image to the batch
   end
 
-  group["ObjectDetector - $model with batchsize $batchsize"] = b = @benchmarkable(
+  group["ObjectDetector_$(model)_with_batchsize_$(batchsize)"] = b = @benchmarkable(
     yolomod(batch, detectThresh=0.5, overlapThresh=0.8),
     teardown=(GC.gc(); CUDA.reclaim()))
 end
