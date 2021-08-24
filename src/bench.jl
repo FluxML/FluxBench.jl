@@ -17,7 +17,7 @@ function benchmark_bw_cu(model, batchsize = 64)
   resnet = model
   ip = rand(Float32, 224, 224, 3, batchsize)
 
-  group["Metalhead"]["Backwards_Pass_$(model)_with_batchsize_$(batchsize)"] = b = @benchmarkable(
+  group["Backwards_Pass_$(model)_with_batchsize_$(batchsize)"] = b = @benchmarkable(
         bw(gresnet, gip),
         setup = (gresnet = $resnet |> gpu;
    	       gip = gpu($ip)),
