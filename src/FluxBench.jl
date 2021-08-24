@@ -1,6 +1,7 @@
 module FluxBench
 
-using Flux, Metalhead# , ObjectDetector, DiffEqFlux
+using Flux, Metalhead, ObjectDetector
+# using DiffEqFlux
 # using OrdinaryDiffEq, StochasticDiffEq, Distributions
 using BenchmarkTools, TimerOutputs
 using HTTP, JSON, FileIO
