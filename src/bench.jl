@@ -26,7 +26,7 @@ function benchmark_bw_cu(model, batchsize = 64)
 end
 
 function bench()
-  for model in MODELS, n in (5, 15, 32)
+  for model in MODELS, n in (5, 15)
     # we can go higher with the batchsize
     # but the CI machines would have variable VRAM
     # so be conservative
