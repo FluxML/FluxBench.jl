@@ -19,7 +19,7 @@ include("benchmarkutils.jl")
 include("bench.jl")
 
 
-function submit(SUITE = SUITE)
+function submit(submit = false, SUITE = SUITE)
   bench()
   warmup(SUITE, verbose = true)
   results = run(SUITE, verbose = true)
@@ -29,9 +29,12 @@ function submit(SUITE = SUITE)
 
   print(JSON.json(flat_results))
   println()
-  HTTP.post("$(ENV["CODESPEED_SERVER"])/result/add/json/",
-            ["Content-Type" => "application/x-www-form-urlencoded"],
-            HTTP.URIs.escapeuri(Dict("json" => JSON.json(flat_results))))
+
+  if submit
+    HTTP.post("$(ENV["CODESPEED_SERVER"])/result/add/json/",
+              ["Content-Type" => "application/x-www-form-urlencoded"],
+              HTTP.URIs.escapeuri(Dict("json" => JSON.json(flat_results))))
+  end
 end
 
 end # module
