@@ -36,7 +36,7 @@ function bench()
   end
 
   # ObjectDetector
-  for model in [ObjectDetector.YOLO.v3_608_COCO, ObjectDetector..YOLO.v3_tiny_416_COCO], batchsize in [1, 3]
+  for model in [ObjectDetector.YOLO.v3_608_COCO, ObjectDetector.YOLO.v3_tiny_416_COCO], batchsize in [1, 3]
     objectdetector_add_yolo_fw(model = model, batchsize = batchsize)
   end
 
