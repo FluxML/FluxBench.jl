@@ -6,7 +6,7 @@ function benchmark_cu(model, batchsize = 64)
   resnet = model
   ip = rand(Float32, 224, 224, 3, batchsize)
 
-  group["Forward_Pass_$(model)_with_batchsize_$(batchsize)"] = b = @benchmarkable(
+  group["Metalhead"]["Forward_Pass_$(model)_with_batchsize_$(batchsize)"] = b = @benchmarkable(
         fw(gresnet, gip),
         setup = (gresnet = $resnet |> gpu;
                gip = gpu($ip)),
@@ -17,7 +17,7 @@ function benchmark_bw_cu(model, batchsize = 64)
   resnet = model
   ip = rand(Float32, 224, 224, 3, batchsize)
 
-  group["Backwards_Pass_$(model)_with_batchsize_$(batchsize)"] = b = @benchmarkable(
+  group["Metalhead"]["Backwards_Pass_$(model)_with_batchsize_$(batchsize)"] = b = @benchmarkable(
         bw(gresnet, gip),
         setup = (gresnet = $resnet |> gpu;
    	       gip = gpu($ip)),
@@ -36,7 +36,7 @@ function bench()
   end
 
   # ObjectDetector
-  for model in [ObjectDetector.YOLO.v3_608_COCO, ObjectDetector.v3_tiny_416_COCO], batchsize in [1, 3]
+  for model in [ObjectDetector.YOLO.v3_608_COCO, ObjectDetector..YOLO.v3_tiny_416_COCO], batchsize in [1, 3]
     objectdetector_add_yolo_fw(model = model, batchsize = batchsize)
   end
 
