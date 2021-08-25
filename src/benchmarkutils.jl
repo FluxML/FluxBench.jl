@@ -11,18 +11,18 @@ macro async_benchmarkable(ex...)
 end
 
 basedata = Dict(
-        "branch"        => ENV["CODESPEED_BRANCH"],
-        "commitid"      => ENV["CODESPEED_COMMIT"],
-        "project"       => ENV["CODESPEED_PROJECT"],
-        "environment"   => ENV["CODESPEED_ENVIRONMENT"],
-        "executable"    => ENV["CODESPEED_EXECUTABLE"]
+        "branch"        => get(ENV, "CODESPEED_BRANCH", "default"),
+        "commitid"      => get(ENV, "CODESPEED_COMMIT", "2132a29cd494de6f0166f52ca5ec1da0cf1aa098"),
+        "project"       => get(ENV, "CODESPEED_PROJECT", "FluxBench"),
+        "environment"   => get(ENV, "CODESPEED_ENVIRONMENT", "FluxBench"),
+        "executable"    => get(ENV, "CODESPEED_EXECUTABLE", 1)
 )
 
 # convert nested groups of benchmark to flat dictionaries of results
-function flatten(results, prefix = "")
+function flatten(results, prefix = "", flat_results = [])
   for (key,value) in results
     if value isa BenchmarkGroup
-      flatten(value, "$prefix$key/")
+      flat_results = flatten(value, "$prefix$key/", flat_results)
     else
       @assert value isa BenchmarkTools.Trial
 
@@ -38,6 +38,7 @@ function flatten(results, prefix = "")
           "max" => maximum(value).time / 1e9))
     end
   end
+  flat_results
 end
 
 # Do a forward pass
