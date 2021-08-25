@@ -32,5 +32,9 @@ julia> FluxBench.bench()
 
 To contribute benchmarks one needs to:
 * add in the script(s) to the `src/packages` directory with the required dependencies and code needed to run the benchmarks
+  - Note: remember to add a `group` to the `SUITE` variable via the `addgroup!(SUITE, "name/of/benchmark/group")`
+  - Treat `group` as a dictionary and new benchmarks can be added via assigning results to group as: `group["name_of_benchmark"] = @benchmarkable ...`
+  - Please use the macro `@benchmarkable` to set up the benchmarks (see BenchmarkTools.jl for a reference)
+  - Please follow the performance, profiling and benchmarking guides of the different packages used in the benchmark. Examples include - [Julia's](https://docs.julialang.org/en/v1/manual/performance-tips/), [Flux's](https://fluxml.ai/Flux.jl/stable/performance/), [CUDA's](https://cuda.juliagpu.org/stable/development/profiling/), [BenchmarkTools](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/)
 * include the benchmarks in the top level file `src/FluxBench.jl`
 * call the benchmarks in the `bench` function located in file `src/bench.jl`
