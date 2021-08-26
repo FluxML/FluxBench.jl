@@ -46,5 +46,4 @@ steps:
     agents:
       queue: "juliagpu"
       cuda: "*"
-    if: build.message !~ /\[skip benchmarks\]/ &&
-        build.branch !~ /^master$$/
+    if: build.message !~ /\[skip benchmarks\]/
