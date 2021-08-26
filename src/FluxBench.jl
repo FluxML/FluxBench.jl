@@ -16,6 +16,7 @@ SUITE = BenchmarkGroup()
 
 include("utils.jl")
 include("packages/objectdetector.jl")
+include("packages/transformers.jl")
 # include("packages/diffeqflux.jl")
 include("bench.jl")
 
