@@ -57,4 +57,10 @@ function bench()
   # for b in (4, 16, 64, 256), ndims in (2, 4, 8)
   #   diffeqflux_add_ffjord(b, ndims, df_group)
   # end
+
+  # Transformers
+  trf_group = addgroup!(SUITE, "Transformers")
+  transformer_add_trf(Transformer, 12, 32, trf_group)
+  transformer_add_trf(Bert, 8, trf_group)
+
 end
