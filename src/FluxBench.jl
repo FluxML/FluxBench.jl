@@ -14,7 +14,7 @@ const MODELS = (ResNet, DenseNet, GoogleNet, VGG19) #, SqueezeNet)
 
 SUITE = BenchmarkGroup()
 
-include("benchmarkutils.jl")
+include("utils.jl")
 include("packages/objectdetector.jl")
 # include("packages/diffeqflux.jl")
 include("bench.jl")
