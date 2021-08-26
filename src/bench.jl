@@ -36,8 +36,9 @@ function bench()
   end
 
   # ObjectDetector
+  od_group = addgroup!(SUITE, "ObjectDetector")
   for model in [ObjectDetector.YOLO.v3_608_COCO, ObjectDetector.YOLO.v3_tiny_416_COCO], batchsize in [1, 3]
-    objectdetector_add_yolo_fw(model, batchsize)
+    objectdetector_add_yolo_fw(model, batchsize, od_group)
   end
 
   # # DiffEqFlux
