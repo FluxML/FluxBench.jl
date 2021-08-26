@@ -61,5 +61,6 @@ function bench()
   # Transformers
   trf_group = addgroup!(SUITE, "Transformers")
   transformer_add_trf(Transformer, 12, 32, trf_group)
+  transformer_add_trf(Bert, 8, trf_group)
 
 end
