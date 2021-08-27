@@ -4,18 +4,18 @@ const REAL_RUN = get(ENV, "CODESPEED_BRANCH", nothing) == "master"
 
 # convenience macro to create a benchmark that requires synchronizing the GPU
 macro async_benchmarkable(ex...)
-    quote
-        # use non-blocking sync to reduce overhead
-        @benchmarkable CUDA.@sync blocking = false $(ex...)
-    end
+  quote
+    # use non-blocking sync to reduce overhead
+    @benchmarkable CUDA.@sync blocking = false $(ex...)
+  end
 end
 
 basedata = Dict(
-        "branch"        => get(ENV, "CODESPEED_BRANCH", "default"),
-        "commitid"      => get(ENV, "CODESPEED_COMMIT", "2132a29cd494de6f0166f52ca5ec1da0cf1aa098"),
+        "branch"        => get(ENV, "CODESPEED_BRANCH", "master"),
+        "commitid"      => get(ENV, "CODESPEED_COMMIT", "nothing"),
         "project"       => get(ENV, "CODESPEED_PROJECT", "FluxBench"),
         "environment"   => get(ENV, "CODESPEED_ENVIRONMENT", "FluxBench"),
-        "executable"    => get(ENV, "CODESPEED_EXECUTABLE", 1)
+        "executable"    => get(ENV, "CODESPEED_EXECUTABLE", "Julia 1.6")
 )
 
 # convert nested groups of benchmark to flat dictionaries of results
