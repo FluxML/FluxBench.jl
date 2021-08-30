@@ -1,25 +1,50 @@
 steps:
-  -  label: "Benchmarks"
+  - label: "Benchmarks"
     plugins:
       - JuliaCI/julia#v1:
           version: 1.6
     env:
-      CODESPEED_PROJECT: "$BUILDKITE_PIPELINE_NAME"
+      CODESPEED_PROJECT: "FluxBench"
       CODESPEED_BRANCH: "$BUILDKITE_BRANCH"
       CODESPEED_COMMIT: "$BUILDKITE_COMMIT"
       CODESPEED_EXECUTABLE: "Julia 1.6"
+      SECRET_CODESPEED_SERVER: "DyBxj9TMW7C69tAefpRCieKLvsMEOJKE3RXzj0o2zSRvWFnsVrocrV1bSnD1ApTp0yuYutfj/0RdrKWBKuZTuMVDg1yOslQqTmJBL+zfDmwRrxmo5AkaLLAIzkL15l9Z7FJuEBszvtEOhA9uJfsdN2R4OHcGZzfKJ8KfTIzyFtjZpAoxoYao292IhmkUA9rf13JSMSnKwd4Od1XkuF9Dhz0KRpIvagVDTQKG06WEKYX1CArXF/3DP/FMC7ZrFEllO2KinxiNv7SPq3e/0IUgKGPWEaaMR60N6Dfibg0EXpZ5O/H5SkSN8oDhzmdYKQcyhVLVvLazlQkLGwA3hcViVQ==;U2FsdGVkX1+2GfXSirm0qTNaQDyeGFowE3VdIpUgymprMoWFUF7O/K6MxycX9nOv4QZJ//qwmEhdAKUc5KlnEA=="
     command: |
       julia --project -e '
-        ENV["CODESPEED_ENVIRONMENT"] = ENV["BUILDKITE_AGENT_NAME"]
+        ENV["CODESPEED_ENVIRONMENT"] = "FluxBench" # ENV["BUILDKITE_AGENT_NAME"]
         println("Preparing Environment")
         using Pkg
-        Pkg.activate()
-        pkg"add Flux#$(BUILDKITE_COMMIT)"
         Pkg.instantiate()
-        # push!(LOAD_PATH, @__DIR__)
         println("Starting Benchmarks")
         using FluxBench
-        FluxBench.bench()'
+        FluxBench.submit(true)'
     agents:
       queue: "benchmark"
       cuda: "*"
+    if: build.message !~ /\[skip benchmarks\]/ &&
+        build.branch =~ /^master$$/
+
+  - label: "Benchmarks (Trial)"
+    plugins:
+      - JuliaCI/julia#v1:
+          version: 1.6
+    env:
+      CODESPEED_PROJECT: "FluxBench"
+      CODESPEED_BRANCH: "$BUILDKITE_BRANCH"
+      CODESPEED_COMMIT: "$BUILDKITE_COMMIT"
+      CODESPEED_EXECUTABLE: "Julia 1.6"
+      SECRET_CODESPEED_SERVER: "DyBxj9TMW7C69tAefpRCieKLvsMEOJKE3RXzj0o2zSRvWFnsVrocrV1bSnD1ApTp0yuYutfj/0RdrKWBKuZTuMVDg1yOslQqTmJBL+zfDmwRrxmo5AkaLLAIzkL15l9Z7FJuEBszvtEOhA9uJfsdN2R4OHcGZzfKJ8KfTIzyFtjZpAoxoYao292IhmkUA9rf13JSMSnKwd4Od1XkuF9Dhz0KRpIvagVDTQKG06WEKYX1CArXF/3DP/FMC7ZrFEllO2KinxiNv7SPq3e/0IUgKGPWEaaMR60N6Dfibg0EXpZ5O/H5SkSN8oDhzmdYKQcyhVLVvLazlQkLGwA3hcViVQ==;U2FsdGVkX1+2GfXSirm0qTNaQDyeGFowE3VdIpUgymprMoWFUF7O/K6MxycX9nOv4QZJ//qwmEhdAKUc5KlnEA=="
+    command: |
+      julia --project -e '
+        ENV["CODESPEED_ENVIRONMENT"] = "FluxBench" # ENV["BUILDKITE_AGENT_NAME"]
+        println("Preparing Environment")
+        using Pkg
+        Pkg.instantiate()
+        println("Starting Benchmarks")
+        using FluxBench
+        FluxBench.submit(false)'
+    agents:
+      queue: "juliagpu"
+      cuda: "*"
+    if: build.message !~ /\[skip benchmarks\]/ &&
+        build.branch !~ /^master$$/
