@@ -4,25 +4,25 @@ const REAL_RUN = get(ENV, "CODESPEED_BRANCH", nothing) == "master"
 
 # convenience macro to create a benchmark that requires synchronizing the GPU
 macro async_benchmarkable(ex...)
-    quote
-        # use non-blocking sync to reduce overhead
-        @benchmarkable CUDA.@sync blocking = false $(ex...)
-    end
+  quote
+    # use non-blocking sync to reduce overhead
+    @benchmarkable CUDA.@sync blocking = false $(ex...)
+  end
 end
 
-basedata = Dict(
-        "branch"        => ENV["CODESPEED_BRANCH"],
-        "commitid"      => ENV["CODESPEED_COMMIT"],
-        "project"       => ENV["CODESPEED_PROJECT"],
-        "environment"   => ENV["CODESPEED_ENVIRONMENT"],
-        "executable"    => ENV["CODESPEED_EXECUTABLE"]
-)
-
 # convert nested groups of benchmark to flat dictionaries of results
-function flatten(results, prefix = "")
+function flatten(results, prefix = "", flat_results = [])
+  
+  basedata = Dict(
+                  "branch"        => get(ENV, "CODESPEED_BRANCH", "default"),
+                  "commitid"      => get(ENV, "CODESPEED_COMMIT", "nothing"),
+                  "project"       => get(ENV, "CODESPEED_PROJECT", "FluxBench"),
+                  "environment"   => get(ENV, "CODESPEED_ENVIRONMENT", "FluxBench"),
+                  "executable"    => get(ENV, "CODESPEED_EXECUTABLE", "Julia 1.6"))
+  
   for (key,value) in results
     if value isa BenchmarkGroup
-      flatten(value, "$prefix$key/")
+      flat_results = flatten(value, "$prefix$key/", flat_results)
     else
       @assert value isa BenchmarkTools.Trial
 
@@ -38,11 +38,12 @@ function flatten(results, prefix = "")
           "max" => maximum(value).time / 1e9))
     end
   end
+  flat_results
 end
 
 # Do a forward pass
 function fw(m, ip)
-    CUDA.@sync m(ip)
+  CUDA.@sync m(ip)
 end
 
 # Do a forward + backward pass
