@@ -10,16 +10,16 @@ macro async_benchmarkable(ex...)
   end
 end
 
-basedata = Dict(
-        "branch"        => get(ENV, "CODESPEED_BRANCH", "master"),
-        "commitid"      => get(ENV, "CODESPEED_COMMIT", "nothing"),
-        "project"       => get(ENV, "CODESPEED_PROJECT", "FluxBench"),
-        "environment"   => get(ENV, "CODESPEED_ENVIRONMENT", "FluxBench"),
-        "executable"    => get(ENV, "CODESPEED_EXECUTABLE", "Julia 1.6")
-)
-
 # convert nested groups of benchmark to flat dictionaries of results
 function flatten(results, prefix = "", flat_results = [])
+  
+  basedata = Dict(
+                  "branch"        => get(ENV, "CODESPEED_BRANCH", "default"),
+                  "commitid"      => get(ENV, "CODESPEED_COMMIT", "nothing"),
+                  "project"       => get(ENV, "CODESPEED_PROJECT", "FluxBench"),
+                  "environment"   => get(ENV, "CODESPEED_ENVIRONMENT", "FluxBench"),
+                  "executable"    => get(ENV, "CODESPEED_EXECUTABLE", "Julia 1.6"))
+  
   for (key,value) in results
     if value isa BenchmarkGroup
       flat_results = flatten(value, "$prefix$key/", flat_results)
@@ -43,7 +43,7 @@ end
 
 # Do a forward pass
 function fw(m, ip)
-    CUDA.@sync m(ip)
+  CUDA.@sync m(ip)
 end
 
 # Do a forward + backward pass
