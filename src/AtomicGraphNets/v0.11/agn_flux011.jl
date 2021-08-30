@@ -1,22 +1,25 @@
 using Pkg; Pkg.activate(@__DIR__)
+using Artifacts
 using ChemistryFeaturization
 using AtomicGraphNets
 using Serialization
 using CSV, DataFrames
+using Flux
 
 # general options, hyperparams, etc.
 train_frac = 0.8
 num_conv = 3 # how many convolutional layers?
 crys_fea_len = 32 # length of crystal feature vector after pooling
 num_hidden_layers = 1 # how many fully-connected layers after convolution and pooling?
-opt = ADAM(0.001) # optimizer
+opt = Flux.Optimise.ADAM(0.001) # optimizer
 
 # load up the data (it's pre-shuffled)
-info = CSV.read(joinpath("data", "info.csv"), DataFrame)
+artpath = artifact"v011_data"
+info = CSV.read(joinpath(artpath, "info.csv"), DataFrame)
 x = AtomGraph[]
 for r in eachrow(info)
     fname = r[:task_id]*".jls"
-    g = deserialize(joinpath("data", "graphs", fname))
+    g = deserialize(joinpath(artpath, "graphs", fname))
     push!(x, g)
 end
 y = info.formation_energy_per_atom
