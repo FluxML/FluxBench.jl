@@ -72,5 +72,5 @@ function bench()
   # FluxArchitectures
   fa_group = addgroup!(SUITE, "FluxArchitectures")
   fluxarchitectures_add_darnn(10, 10, 10, 30, 500, fa_group)
-  fluxarchitectures_add_dsanet(3, 3, 4, 1, 3, 2, 10, 30, 500, fa_group)
+  fluxarchitectures_add_dsanet(3, 3, 4, 1, 3, 2, 10, 20, 300, fa_group)
 end
