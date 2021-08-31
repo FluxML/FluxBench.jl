@@ -19,10 +19,26 @@ function trimesh_benchmark_back(mesh::TriMesh)
     return l1+l2+l3
 end
 
+function trimesh_conversion(m::TriMesh)
+    p = PointCloud(m)
+    v = VoxelGrid(m)
+end
+
+function pointcloud_conversion(p::PointCloud)
+    m = TriMesh(p)
+    v = VoxelGrid(p)
+end
+
+function voxelgrid_conversion(v::VoxelGrid)
+    m = TriMesh(v)
+    p = PointCloud(v)
+end
+
 function flux3d_add_trimesh(f3d_grp)
     
     download("https://raw.githubusercontent.com/McNopper/OpenGL/master/Binaries/teapot.obj",
         "teapot.obj")
+
     mesh = load_trimesh("teapot.obj")
 
     f3d_grp["Flux3D_TriMesh_Forward_Pass"] = @benchmarkable(
@@ -43,6 +59,33 @@ function flux3d_add_trimesh(f3d_grp)
         teardown = (GC.gc(); CUDA.reclaim())
     )
    
+    f3d_grp["Flux3D_TriMesh_Conversion"] = @benchmarkable(
+        bw(m, mesh),
+        setup = (
+            mesh = TriMesh($mesh);
+            m = $trimesh_conversion
+        ),
+        teardown = (GC.gc(); CUDA.reclaim())
+    )
+
+    f3d_grp["Flux3D_PointCloud_Conversion"] = @benchmarkable(
+        bw(m, p),
+        setup = (
+            p = PointCloud($mesh);
+            m = $pointcloud_conversion
+        ),
+        teardown = (GC.gc(); CUDA.reclaim())
+    )
+
+    f3d_grp["Flux3D_VoxelGrid_Conversion"] = @benchmarkable(
+        bw(m, v),
+        setup = (
+            v = VoxelGrid($mesh);
+            m = $voxelgrid_conversion
+        ),
+        teardown = (GC.gc(); CUDA.reclaim())
+    )
+
     # f3d_grp["Flux3D_TriMesh_Forward_Pass_CUDA"] = @benchmarkable(
     #     fw(m, mesh),
     #     setup = (
