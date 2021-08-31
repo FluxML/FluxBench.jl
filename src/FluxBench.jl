@@ -1,6 +1,7 @@
 module FluxBench
 
 using Flux, Metalhead, ObjectDetector
+using Flux3D
 # using DiffEqFlux
 # using OrdinaryDiffEq, StochasticDiffEq, Distributions
 using BenchmarkTools, TimerOutputs
@@ -17,6 +18,7 @@ SUITE = BenchmarkGroup()
 include("utils.jl")
 include("packages/objectdetector.jl")
 include("packages/transformers.jl")
+include("packages/flux3d.jl")
 # include("packages/diffeqflux.jl")
 include("bench.jl")
 
