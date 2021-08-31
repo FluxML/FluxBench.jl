@@ -63,8 +63,14 @@ function bench()
   transformer_add_trf(Transformer, 12, 32, trf_group)
   transformer_add_trf(Bert, 8, trf_group)
 
+
   # Flux3D.jl
   flux3d_group = addgroup!(SUITE, "Flux3D")
   flux3d_add_trimesh(flux3d_group)
 
+
+  # FluxArchitectures
+  fa_group = addgroup!(SUITE, "FluxArchitectures")
+  fluxarchitectures_add_darnn(10, 10, 10, 30, 500, fa_group)
+  fluxarchitectures_add_dsanet(3, 3, 4, 1, 3, 2, 10, 30, 500, fa_group)
 end
