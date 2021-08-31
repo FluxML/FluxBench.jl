@@ -1,0 +1,7 @@
+[deps]
+AtomicGraphNets = "ccdf130a-3c88-4595-a023-a7e7f78b9dd5"
+ChemistryFeaturization = "6c925690-434a-421d-aea7-51398c5b007a"
+Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
