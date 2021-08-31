@@ -60,7 +60,7 @@ function flux3d_add_trimesh(f3d_grp)
     )
    
     f3d_grp["Flux3D_TriMesh_Conversion"] = @benchmarkable(
-        bw(m, mesh),
+        fw(m, mesh),
         setup = (
             mesh = TriMesh($mesh);
             m = $trimesh_conversion
@@ -69,7 +69,7 @@ function flux3d_add_trimesh(f3d_grp)
     )
 
     f3d_grp["Flux3D_PointCloud_Conversion"] = @benchmarkable(
-        bw(m, p),
+        fw(m, p),
         setup = (
             p = PointCloud($mesh);
             m = $pointcloud_conversion
@@ -78,7 +78,7 @@ function flux3d_add_trimesh(f3d_grp)
     )
 
     f3d_grp["Flux3D_VoxelGrid_Conversion"] = @benchmarkable(
-        bw(m, v),
+        fw(m, v),
         setup = (
             v = VoxelGrid($mesh);
             m = $voxelgrid_conversion
