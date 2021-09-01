@@ -3,5 +3,5 @@ git-tree-sha1 = "6dc2e049dc125213eb474c876c27f2a89fc9c02b"
 lazy = true
 
     [[v012_data.download]]
-    url = "https://github.com/Chemellia/AGN_FluxBench_data/blob/master/v012.tar.gz"
+    url = "https://github.com/Chemellia/AGN_FluxBench_data/raw/master/v012.tar.gz"
     sha256 = "1c1428c5e6803e7670bb2a62c115cb9dce33ffebfb385ef57d94bc305d01ae89"
