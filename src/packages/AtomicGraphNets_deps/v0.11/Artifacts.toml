@@ -1,7 +1,0 @@
-[v011_data]
-git-tree-sha1 = "440c9355efef974ff758677151d867be28d813e9"
-lazy = true
-
-    [[v011_data.download]]
-    url = "https://github.com/Chemellia/AGN_FluxBench_data/raw/master/v011.tar.gz"
-    sha256 = "2e02dd655ad42cc49703f9e6926f568c0342b72f49fb750d6ade2a6818c5921d"

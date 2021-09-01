@@ -16,8 +16,7 @@ function agn_setup(flux_version, batchsize, num_conv, hidden_layer_width, num_hi
     @eval using AtomicGraphNets
 
     # load up the (pre-shuffled) data
-    #artpaths = Dict("0.11"=>artifact"v011_data", "0.12"=>artifact"v012_data")
-    artpaths = Dict(k=>joinpath(@__DIR__, "..", "..", "..", "AGN_FluxBench_data", k) for k in flux_versions)
+    artpaths = Dict("0.11"=>artifact"v011_data", "0.12"=>artifact"v012_data")
     artpath = artpaths[flux_version]
     xs = deserialize.(readdir(joinpath(artpath, "graphs"), join=true))
     

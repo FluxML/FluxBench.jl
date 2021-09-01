@@ -1,0 +1,15 @@
+[v011_data]
+git-tree-sha1 = "440c9355efef974ff758677151d867be28d813e9"
+lazy = true
+
+    [[v011_data.download]]
+    url = "https://github.com/Chemellia/AGN_FluxBench_data/raw/master/v011.tar.gz"
+    sha256 = "2e02dd655ad42cc49703f9e6926f568c0342b72f49fb750d6ade2a6818c5921d"
+
+[v012_data]
+git-tree-sha1 = "6dc2e049dc125213eb474c876c27f2a89fc9c02b"
+lazy = true
+
+    [[v012_data.download]]
+    url = "https://github.com/Chemellia/AGN_FluxBench_data/raw/master/v012.tar.gz"
+    sha256 = "1c1428c5e6803e7670bb2a62c115cb9dce33ffebfb385ef57d94bc305d01ae89"
