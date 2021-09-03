@@ -45,8 +45,14 @@ end
 function fw(m, ip)
   CUDA.@sync m(ip)
 end
+function fw_cpu(m, ip)
+  m(ip)
+end
 
 # Do a forward + backward pass
 function bw(m, ip)
   gs = CUDA.@sync gradient((m, x) -> sum(m(x)), m, ip)
+end
+function bw_cpu(m, ip)
+  gs = gradient((m, x) -> sum(m(x)), m, ip)
 end
