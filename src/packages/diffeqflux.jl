@@ -20,10 +20,10 @@ function diffeqflux_add_neuralode(abstol = 1f-3, reltol = 1f-3, solver = Tsit5()
     fw(model, gip),
     setup = (nn_gpu = gpu($nn);
              model = Chain($down,
-			   $nn_ode(nn_gpu),
-			   $diffeqarray_to_array,
+                           $nn_ode(nn_gpu),
+                           $diffeqarray_to_array,
                            $fc) |> gpu;
-	     gip = gpu($ip)),
+             gip = gpu($ip)),
     teardown = (GC.gc(); CUDA.reclaim()))
 
   df_group["DiffEqFlux_Backward_Pass_NeuralODE_with_abstol_$(abstol)_reltol_$(reltol)_batchsize_$(batchsize)_and_solver_$(solver)"] = b = @benchmarkable(
@@ -31,9 +31,9 @@ function diffeqflux_add_neuralode(abstol = 1f-3, reltol = 1f-3, solver = Tsit5()
     setup = (nn_gpu = $nn |> gpu;
              model = Chain($down,
                            $nn_ode(nn_gpu),
-			   $diffeqarray_to_array,
-			   $fc) |> gpu;
-	     gip = gpu($ip)),
+                           $diffeqarray_to_array,
+                           $fc) |> gpu;
+             gip = gpu($ip)),
     teardown = (GC.gc(); CUDA.reclaim()))
 end
 
@@ -42,10 +42,7 @@ function diffeqflux_add_neuralsde(batchsize = 16, ntrajectories = 100, df_group 
   drift = Chain(Dense(2, 32, tanh), Dense(32, 32, tanh), Dense(32, 2))
   nn_sde = (f, g) -> NeuralDSDE(f, g, (0.0f0, 1.0f0), SOSRI(), abstol = 1f-1, reltol = 1f-1)
 
-  function sdesol_to_array(x)
-    xarr = gpu(x)
-    return reshape(mean(reshape(xarr, size(xarr, 1), ntrajectories, size(xarr, 2)), dims = 2), size(xarr))
-  end
+  sdesol_to_array(x) = mean(gpu(x), dims = 2)
 
   ip = repeat(rand(Float32, 2, batchsize), inner = (1, ntrajectories))
 
@@ -53,17 +50,17 @@ function diffeqflux_add_neuralsde(batchsize = 16, ntrajectories = 100, df_group 
     fw(model, gip),
     setup = (drift_gpu = gpu($drift);
              diffusion_gpu = gpu($diffusion);
-	     model = Chain($nn_sde(drift_gpu, diffusion_gpu),
-			   $sdesol_to_array);
-	     gip = gpu($ip)),
+             model = Chain($nn_sde(drift_gpu, diffusion_gpu),
+                           $sdesol_to_array);
+             gip = gpu($ip)),
     teardown = (GC.gc(); CUDA.reclaim()))
 
   df_group["DiffEqFlux_Backward_Pass_NeuralSDE_with_batchsize_$(batchsize)_and_ntrajectories_$(ntrajectories)"] = b = @benchmarkable(
     bw(model, gip),
     setup = (drift_gpu = gpu($drift);
-             diffusion_gpu = $diffusion;
-	     model = Chain($nn_sde(drift_gpu, diffusion_gpu),
-			   $sdesol_to_array) |> gpu;
+             diffusion_gpu = gpu($diffusion);
+             model = Chain($nn_sde(drift_gpu, diffusion_gpu),
+                           $sdesol_to_array) |> gpu;
              gip = gpu($ip)),
     teardown = (GC.gc(); CUDA.reclaim()))
 end
@@ -74,39 +71,39 @@ function diffeqflux_add_ffjord(ndims = 2, batchsize = 256, df_group = addgroup!(
   ffjordsol_to_logpx(x) = -mean(x[1])[1]
 
   ip = rand(Float32, ndims, batchsize)
+  e = randn(eltype(ip), size(ip))
 
   nsamples = batchsize
   function sample_from_learned_model(cnf_ffjord)
     pz = cnf_ffjord.basedist
     Z_samples = cu(rand(pz, nsamples))
-    ffjord_ = (u, p, t) -> DiffEqFlux.ffjord(u, p, t, cnf_ffjord.re, e, false, false)
-    e = cu(randn(eltype(X), size(Z_samples)))
-    _z = Zygote.@ignore similar(X, 1, size(Z_samples, 2))
+    e = cu(randn(eltype(Z_samples), size(Z_samples)))
+    ffjord_ = (u, p, t) -> DiffEqFlux.ffjord(u, p, t, cnf_ffjord.re, e; regularize = false, monte_carlo = false)
+    _z = Zygote.@ignore similar(Z_samples, 1, size(Z_samples, 2))
     Zygote.@ignore fill!(_z, 0.0f0)
     prob = ODEProblem{false}(ffjord_, vcat(Z_samples, _z), (1.0, 0.0), cnf_ffjord.p)
     x_gen = solve(prob, cnf_ffjord.args...; sensealg = InterpolatingAdjoint(), cnf_ffjord.kwargs...)[1:end-1, :, end]
   end
 
   df_group["DiffEqFlux_Forward_Pass_FFJORD_with_batchsize_$(batchsize)_and_ndims_$(ndims)"] = b = @benchmarkable(
-    fw(model, gip),
+    CUDA.@sync ffjordsol_to_logpx(model(gip, model.p, e_gpu)),
     setup = (nn_gpu = gpu($nn);
-             model = Chain($cnf_ffjord(nn_gpu),
-			   $ffjordsol_to_logpx) |> gpu;
-             gip = gpu($ip)),
+             model = cnf_ffjord(nn_gpu);
+             gip = gpu($ip);
+             e_gpu = gpu($e)),
     teardown = (GC.gc(); CUDA.reclaim()))
 
   df_group["DiffEqFlux_Backward_Pass_FFJORD_with_batchsize_$(batchsize)_and_ndims_$(ndims)"] = b = @benchmarkable(
-    bw(model, gip),
+    CUDA.@sync gradient((m, x) -> sum(ffjordsol_to_logpx(m(x, m.p, e_gpu))), model, gip),
     setup = (nn_gpu = gpu($nn);
-             model = Chain($cnf_ffjord(nn_gpu),
-			   $ffjordsol_to_logpx) |> gpu;
-             gip = gpu($ip)),
+             model = cnf_ffjord(nn_gpu);
+             gip = gpu($ip);
+             e_gpu = gpu($e)),
     teardown = (GC.gc(); CUDA.reclaim()))
 
   df_group["DiffEqFlux_Sampling_FFJORD_with_nsamples_$(nsamples)_and_ndims_$(ndims)"] = b = @benchmarkable(
-    fw(sampler, model),
+    fw(sample_from_learned_model, model),
     setup = (nn_gpu = gpu($nn);
-             model = gpu($cnf_ffjord(nn_gpu));
-	     sampler = gpu($sample_from_learned_model)),
+             model = gpu($cnf_ffjord(nn_gpu))),
     teardown = (GC.gc(); CUDA.reclaim()))
 end

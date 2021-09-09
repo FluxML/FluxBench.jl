@@ -21,8 +21,8 @@ include("utils.jl")
 include("packages/objectdetector.jl")
 include("packages/transformers.jl")
 include("packages/flux3d.jl")
-include("packages/fluxarchitectures.jl")
-# include("packages/diffeqflux.jl")
+# include("packages/fluxarchitectures.jl")
+include("packages/diffeqflux.jl")
 include("bench.jl")
 
 
