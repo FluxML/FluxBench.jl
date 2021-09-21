@@ -395,10 +395,8 @@ uuid = "432009dd-59a1-4b72-8c93-6462ce9b220f"
 version = "0.1.4"
 
 [[FluxArchitectures]]
-deps = ["BSON", "Flux", "JuliennedArrays", "Reexport", "Revise", "SliceMap"]
-git-tree-sha1 = "6d0ba644f27de55bed893ec06cb0254f23e52f49"
-repo-rev = "master"
-repo-url = "https://github.com/sdobber/FluxArchitectures"
+deps = ["BSON", "Flux", "JuliennedArrays", "LazyArtifacts", "Random", "Reexport", "Revise", "SliceMap"]
+git-tree-sha1 = "fe91a3356562704000a388650595d8471f56f986"
 uuid = "53d20848-f986-4c56-957e-0e417ec068db"
 version = "0.1.0"
 
@@ -697,9 +695,9 @@ uuid = "aa1ae85d-cabe-5617-a682-6adf51b2e16a"
 version = "0.8.21"
 
 [[JuliennedArrays]]
-git-tree-sha1 = "5c5239dc913723f5e1357f584fd55caee808016d"
+git-tree-sha1 = "be091c0509f603ab5597e4d8a987ae20e56537f0"
 uuid = "5cadff95-7770-533d-a838-a1bf817ee6e0"
-version = "0.2.2"
+version = "0.2.3"
 
 [[Juno]]
 deps = ["Base64", "Logging", "Media", "Profile"]
@@ -811,9 +809,9 @@ version = "2.1.2"
 
 [[MKL_jll]]
 deps = ["Artifacts", "IntelOpenMP_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "Pkg"]
-git-tree-sha1 = "c253236b0ed414624b083e6b72bfe891fbd2c7af"
+git-tree-sha1 = "5455aef09b40e5020e1520f551fa3135040d4ed0"
 uuid = "856f044c-d86e-5d09-b602-aeab76dc8ba7"
-version = "2021.1.1+1"
+version = "2021.1.1+2"
 
 [[MacroTools]]
 deps = ["Markdown", "Random"]
