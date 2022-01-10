@@ -13,7 +13,7 @@ using Statistics
 using Zygote
 # using Torch - If we want to compare progress
 
-const MODELS = (ResNet, DenseNet, GoogleNet, VGG19) #, SqueezeNet)
+const MODELS = (ResNet18, ResNet34, ResNet50, DenseNet, GoogLeNet, VGG19) #, SqueezeNet)
 
 SUITE = BenchmarkGroup()
 
@@ -21,7 +21,7 @@ include("utils.jl")
 include("packages/objectdetector.jl")
 include("packages/transformers.jl")
 include("packages/flux3d.jl")
-include("packages/fluxarchitectures.jl")
+# include("packages/fluxarchitectures.jl")
 # include("packages/diffeqflux.jl")
 include("bench.jl")
 
