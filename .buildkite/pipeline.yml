@@ -41,8 +41,15 @@ steps:
         using Pkg
         Pkg.instantiate()
         println("Starting Benchmarks")
-        using FluxBench
-        FluxBench.submit(false)'
+        using FluxBench, CUDA
+        using CUDA.NVML
+        try
+          FluxBench.submit(false)
+        catch e
+          dev = NVML.devices()
+          @show NVML.compute_processes(dev)
+          rethrow(e)
+        end'
     agents:
       queue: "juliagpu"
       cuda: "*"
