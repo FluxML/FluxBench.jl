@@ -47,7 +47,9 @@ steps:
           FluxBench.submit(false)
         catch e
           dev = NVML.devices()
-          @show NVML.compute_processes(dev)
+          for d in dev
+            @show NVML.compute_processes(d)
+          end
           rethrow(e)
         end'
     agents:
