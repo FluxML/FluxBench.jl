@@ -8,42 +8,46 @@ function fluxarchitectures_add_darnn(::FA_GPU, encodersize, decodersize, poollen
     model = DARNN(inputsize, encodersize, decodersize, poollength, 1)
     ip = randn(Float32, inputsize, poollength, 1, datalength)
 
-    fa_group["FluxArchitectures_DARNN_GPU_Forward_Pass_encodersize_$(encodersize)_decodersize_$(decodersize)_poollength_$(poollength)_inputsize_$(inputsize)_datalength_$(datalength)"] = @benchmarkable(
+    fa_group["DARNN_Forward_encoder_$(encodersize)_decoder_$(decodersize)_pool_$(poollength)_input_$(inputsize)_batch_$(datalength)"] = @benchmarkable(
         fw(model, gip), setup = (model = gpu($model); gip = gpu($ip)),
         teardown = (GC.gc(); CUDA.reclaim())
     )
 
-    fa_group["FluxArchitectures_DARNN_GPU_Backward_Pass_encodersize_$(encodersize)_decodersize_$(decodersize)_poollength_$(poollength)_inputsize_$(inputsize)_datalength_$(datalength)"] = @benchmarkable(
+    fa_group["DARNN_Backward_encoder_$(encodersize)_decoder_$(decodersize)_pool_$(poollength)_input_$(inputsize)_data_$(datalength)"] = @benchmarkable(
         bw(model, gip), setup = (model = gpu($model); gip = gpu($ip)),
         teardown = (GC.gc(); CUDA.reclaim())
 )
 end
   
-function fluxarchitectures_add_dsanet(::FA_GPU, locallength, nkernels, dmodel, hid, layers, nhead, poollength, inputsize, datalength, fa_group=addgroup!(SUITE, "FluxArchitectures_GPU"))
+function fluxarchitectures_add_dsanet(::FA_GPU, locallength, nkernels, dmodel,
+                                      hid, layers, nhead, poollength, inputsize,
+                                      datalength, fa_group=addgroup!(SUITE, "FluxArchitectures_GPU"))
     model = DSANet(inputsize, poollength, locallength, nkernels, dmodel, hid, layers, nhead)
     ip = randn(Float32, inputsize, poollength, 1, datalength)
 
-    fa_group["FluxArchitectures_DSANet_GPU_Forward_Pass_locallength_$(locallength)_nkernels_$(nkernels)_dmodel_$(dmodel)_hid_$(hid)_layers_$(layers)_nhead_$(nhead)_poollength_$(poollength)_inputsize_$(inputsize)_datalength_$(datalength)"] = @benchmarkable(
+    fa_group["DSANet_Forward_Pass_local_$(locallength)_nkernels_$(nkernels)_dmodel_$(dmodel)_hid_$(hid)_layers_$(layers)_nhead_$(nhead)_poollength_$(poollength)_inputsize_$(inputsize)_datalength_$(datalength)"] = @benchmarkable(
         fw(model, gip), setup = (model = gpu($model); gip = gpu($ip)),
         teardown = (GC.gc(); CUDA.reclaim())
     )
 
-    fa_group["FluxArchitectures_DSANet_GPU_Backward_Pass_locallength_$(locallength)_nkernels_$(nkernels)_dmodel_$(dmodel)_hid_$(hid)_layers_$(layers)_nhead_$(nhead)_poollength_$(poollength)_inputsize_$(inputsize)_datalength_$(datalength)"] = @benchmarkable(
+    fa_group["DSANet_Backward_Pass_local_$(locallength)_hid_$(hid)_layers_$(layers)_nhead_$(nhead)_poollength_$(poollength)_inputsize_$(inputsize)_datalength_$(datalength)"] = @benchmarkable(
         bw(model, gip), setup = (model = gpu($model); gip = gpu($ip)),
         teardown = (GC.gc(); CUDA.reclaim())
     )
 end
 
-function fluxarchitectures_add_lstnet(::FA_GPU, convlayersize, recurlayersize, poollength, skiplength, inputsize, datalength, fa_group=addgroup!(SUITE, "FluxArchitectures_GPU"))
+function fluxarchitectures_add_lstnet(::FA_GPU, convlayersize, recurlayersize,
+                                      poollength, skiplength, inputsize, datalength,
+                                      fa_group=addgroup!(SUITE, "FluxArchitectures_GPU"))
     model = LSTnet(inputsize, convlayersize, recurlayersize, poollength, skiplength)
     ip = randn(Float32, inputsize, poollength, 1, datalength)
 
-    fa_group["FluxArchitectures_LSTNet_GPU_Forward_Pass_convlayersize_$(convlayersize)_recurlayersize_$(recurlayersize)_skiplength_$(skiplength)_poollength_$(poollength)_inputsize_$(inputsize)_datalength_$(datalength)"] = @benchmarkable(
+    fa_group["LSTNet_Forward_convsize_$(convlayersize)_recursize_$(recurlayersize)_skip_$(skiplength)_poollength_$(poollength)_inputsize_$(inputsize)_datalength_$(datalength)"] = @benchmarkable(
         fw(model, gip), setup = (model = gpu($model); gip = gpu($ip)),
         teardown = (GC.gc(); CUDA.reclaim())
     )
 
-    fa_group["FluxArchitectures_LSTNet_GPU_Backward_Pass_convlayersize_$(convlayersize)_recurlayersize_$(recurlayersize)_skiplength_$(skiplength)_poollength_$(poollength)_inputsize_$(inputsize)_datalength_$(datalength)"] = @benchmarkable(
+    fa_group["LSTNet_Backward_convsize_$(convlayersize)_recursize_$(recurlayersize)_skiplength_$(skiplength)_poollength_$(poollength)_input_$(inputsize)_datalength_$(datalength)"] = @benchmarkable(
         bw(model, gip), setup = (model = gpu($model); gip = gpu($ip)),
         teardown = (GC.gc(); CUDA.reclaim())
     )

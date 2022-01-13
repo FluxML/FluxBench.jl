@@ -13,8 +13,6 @@ using Statistics
 using Zygote
 # using Torch - If we want to compare progress
 
-const MODELS = ((ResNet18, 18), (ResNet34, 34), (ResNet50, 50), (() -> DenseNet((6, 12, 24, 16)), 121), (GoogLeNet, nothing), (VGG19, 19)) #, SqueezeNet)
-
 SUITE = BenchmarkGroup()
 
 include("utils.jl")
