@@ -41,7 +41,7 @@ steps:
         using Pkg
         Pkg.instantiate()
         println("Starting Benchmarks")
-        using FluxBench, Flux, Flux.CUDA
+        using FluxBench, Flux, CUDA
         using CUDA.NVML
         try
           FluxBench.submit(false)
