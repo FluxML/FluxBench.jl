@@ -53,7 +53,7 @@ steps:
           rethrow(e)
         end'
     agents:
-      queue: "juliagpu"
+      queue: "benchmark"
       cuda: "*"
       cap: "sm_75"
     if: build.message !~ /\[skip benchmarks\]/ &&
