@@ -30,15 +30,15 @@ end
 
 function bench()
   mhead_group = addgroup!(SUITE, "Metalhead")
-  # for model in METALHEAD_MODELS, n in (5, 10)
-  #   # we can go higher with the batchsize
-  #   # but the CI machines would have variable VRAM
-  #   # so be conservative
-  #   # TODO: add larger batchsize for full benchmarking runs
-  #   m, config = model
-  #   benchmark_bw_cu(m(), n, config, mhead_group)
-  #   benchmark_cu(m(), n, config, mhead_group)
-  # end
+  for model in METALHEAD_MODELS, n in (5, 10)
+    # we can go higher with the batchsize
+    # but the CI machines would have variable VRAM
+    # so be conservative
+    # TODO: add larger batchsize for full benchmarking runs
+    m, config = model
+    benchmark_bw_cu(m(), n, config, mhead_group)
+    benchmark_cu(m(), n, config, mhead_group)
+  end
 
   # ObjectDetector
   od_group = addgroup!(SUITE, "ObjectDetector")
