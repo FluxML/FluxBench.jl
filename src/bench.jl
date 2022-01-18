@@ -64,9 +64,9 @@ function bench()
   # end
 
   # Transformers
-  # trf_group = addgroup!(SUITE, "Transformers")
-  # transformer_add_trf(Transformer, 12, 32, trf_group)
-  # transformer_add_trf(Bert, 8, trf_group)
+  trf_group = addgroup!(SUITE, "Transformers")
+  transformer_add_trf(Transformer, 12, 32, trf_group)
+  transformer_add_trf(Bert, 8, trf_group)
 
 
   # Flux3D.jl
@@ -80,9 +80,9 @@ function bench()
   fluxarchitectures_add_dsanet(FA_GPU(), 3, 3, 4, 1, 3, 2, 10, 50, 1000, fa_gpu_group)
   fluxarchitectures_add_lstnet(FA_GPU(), 2, 3, 10, 60, 20, 500, fa_gpu_group)
   fluxarchitectures_add_tpalstm(FA_GPU(), 10, 10, 10, 300, fa_gpu_group)
-  # fa_cpu_group = addgroup!(SUITE, "FluxArchitectures_CPU")
-  # fluxarchitectures_add_darnn(FA_CPU(), 5, 5, 10, 10, 300, fa_cpu_group)
-  # fluxarchitectures_add_dsanet(FA_CPU(), 3, 3, 4, 1, 3, 2, 10, 50, 1000, fa_cpu_group)
-  # fluxarchitectures_add_lstnet(FA_CPU(), 2, 3, 10, 60, 20, 500, fa_cpu_group)
-  # fluxarchitectures_add_tpalstm(FA_CPU(), 10, 10, 10, 300, fa_cpu_group)
+  fa_cpu_group = addgroup!(SUITE, "FluxArchitectures_CPU")
+  fluxarchitectures_add_darnn(FA_CPU(), 5, 5, 10, 10, 300, fa_cpu_group)
+  fluxarchitectures_add_dsanet(FA_CPU(), 3, 3, 4, 1, 3, 2, 10, 50, 1000, fa_cpu_group)
+  fluxarchitectures_add_lstnet(FA_CPU(), 2, 3, 10, 60, 20, 500, fa_cpu_group)
+  fluxarchitectures_add_tpalstm(FA_CPU(), 10, 10, 10, 300, fa_cpu_group)
 end
