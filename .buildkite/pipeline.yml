@@ -41,10 +41,20 @@ steps:
         using Pkg
         Pkg.instantiate()
         println("Starting Benchmarks")
-        using FluxBench
-        FluxBench.submit(false)'
+        using FluxBench, Flux, CUDA
+        using CUDA.NVML
+        try
+          FluxBench.submit(false)
+        catch e
+          dev = NVML.devices()
+          for d in dev
+            @show NVML.compute_processes(d)
+          end
+          rethrow(e)
+        end'
     agents:
-      queue: "juliagpu"
+      queue: "benchmark"
       cuda: "*"
+      cap: "sm_75"
     if: build.message !~ /\[skip benchmarks\]/ &&
         build.branch !~ /^master$$/
