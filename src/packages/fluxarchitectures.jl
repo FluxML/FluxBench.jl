@@ -25,7 +25,7 @@ function fluxarchitectures_add_dsanet(::FA_GPU, locallength, nkernels, dmodel,
     model = DSANet(inputsize, poollength, locallength, nkernels, dmodel, hid, layers, nhead)
     ip = randn(Float32, inputsize, poollength, 1, datalength)
 
-    fa_group["DSANet_Forward_local_$(locallength)_nkernels_$(nkernels)_dmodel_$(dmodel)_hid_$(hid)_layers_$(layers)_nhead_$(nhead)_poollength_$(poollength)_inputsize_$(inputsize)_datalength_$(datalength)"] = @benchmarkable(
+    fa_group["DSANet_Forward_local_$(locallength)_nkernels_$(nkernels)_dmodel_$(dmodel)_hid_$(hid)_layers_$(layers)_nhead_$(nhead)_pool_$(poollength)_input_$(inputsize)_data_$(datalength)"] = @benchmarkable(
         fw(model, gip), setup = (model = gpu($model); gip = gpu($ip)),
         teardown = (GC.gc(); CUDA.reclaim())
     )
