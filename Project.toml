@@ -1,7 +1,7 @@
 authors = ["dhairyagandhi <dhairya@juliacopmuting.com>"]
 name = "FluxBench"
 uuid = "30fa118d-bc3d-4e0f-90fc-1d9086cecc36"
-version = "0.1.0"
+version = "0.1.1"
 
 [compat]
 CUDA = "3"
