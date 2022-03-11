@@ -1,7 +1,12 @@
+authors = ["dhairyagandhi <dhairya@juliacopmuting.com>"]
 name = "FluxBench"
 uuid = "30fa118d-bc3d-4e0f-90fc-1d9086cecc36"
-authors = ["dhairyagandhi <dhairya@juliacopmuting.com>"]
-version = "0.1.0"
+version = "0.1.1"
+
+[compat]
+CUDA = "3"
+Flux = "0.12"
+Zygote = "0.6"
 
 [deps]
 BenchmarkCI = "20533458-34a3-403d-a444-e18f38190b5b"
@@ -24,8 +29,3 @@ StochasticDiffEq = "789caeaf-c7a9-5a7d-9973-96adeb23e2a0"
 TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
 Transformers = "21ca0261-441d-5938-ace7-c90938fde4d4"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
-
-[compat]
-CUDA = "3"
-Flux = "0.12"
-Zygote = "0.6"
