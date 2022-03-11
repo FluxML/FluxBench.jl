@@ -2,7 +2,7 @@ steps:
   - label: "Benchmarks"
     plugins:
       - JuliaCI/julia#v1:
-          version: 1.6
+          version: 1.7
     env:
       CODESPEED_PROJECT: "FluxBench"
       CODESPEED_BRANCH: "$BUILDKITE_BRANCH"
@@ -27,7 +27,7 @@ steps:
   - label: "Benchmarks (Trial)"
     plugins:
       - JuliaCI/julia#v1:
-          version: 1.6
+          version: 1.7
     env:
       CODESPEED_PROJECT: "FluxBench"
       CODESPEED_BRANCH: "$BUILDKITE_BRANCH"
