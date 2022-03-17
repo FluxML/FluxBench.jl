@@ -85,4 +85,10 @@ function bench()
   fluxarchitectures_add_dsanet(FA_CPU(), 3, 3, 4, 1, 3, 2, 10, 50, 1000, fa_cpu_group)
   fluxarchitectures_add_lstnet(FA_CPU(), 2, 3, 10, 60, 20, 500, fa_cpu_group)
   fluxarchitectures_add_tpalstm(FA_CPU(), 10, 10, 10, 300, fa_cpu_group)
+
+  # GeometricFlux
+  geoflux_group = addgroup!(SUITE, "GeometricFlux")
+  for hidden_dim in [16, 32], bch_sz in [8, 64]
+    geometricflux_add_gcn(geoflux_group, GCN, hidden_dim, bch_sz)
+  end
 end
