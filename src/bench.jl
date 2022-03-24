@@ -88,7 +88,7 @@ function bench()
 
   # GeometricFlux
   geoflux_group = addgroup!(SUITE, "GeometricFlux")
-  for hidden_dim in [16, 32], bch_sz in [8, 64]
+  for hidden_dim in [16, 32], bch_sz in [8, 16]
     geometricflux_add_gcn(geoflux_group, GCN, hidden_dim, bch_sz)
   end
 end
