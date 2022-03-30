@@ -98,12 +98,8 @@ function diffeqflux_add_ffjord(ndims=2, batchsize=256, df_group=addgroup!(SUITE,
     )
 
     df_group["DiffEqFlux_Samp_FFJORD_with_bsz_$(batchsize)_ndims_$(ndims)"] = @benchmarkable(
-        fw(model, gip),
-        setup = (nn_gpu = gpu($nn);
-        e_gpu = gpu($e);
-        model = $ffjord_sampling(nn_gpu, e_gpu);
-        gip = gpu($ip)),
-        teardown = (GC.gc(); CUDA.reclaim())
+        fw(model, ip), setup = (model = $ffjord_sampling($nn, $e);
+        ip = $ip), teardown = (GC.gc(); CUDA.reclaim())
     )
 
     return nothing
