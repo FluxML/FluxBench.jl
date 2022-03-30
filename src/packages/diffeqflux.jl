@@ -1,7 +1,7 @@
 function diffeqflux_add_neuralode(
     abstol=1.0f-3, reltol=1.0f-3, solver=Tsit5(), batchsize=256, df_group=addgroup!(SUITE, "DiffEqFlux_NeuralODE")
 )
-    down = Chain(flatten, Dense(784, 512, tanh))
+    down = Chain(Flux.flatten, Dense(784, 512, tanh))
     nn = Chain(Dense(512, 256, tanh), Dense(256, 256, tanh), Dense(256, 512, tanh))
     nn_ode =
         f -> NeuralODE(f, (0.0f0, 1.0f0), solver; save_everystep=false, reltol=reltol, abstol=abstol, save_start=false)
