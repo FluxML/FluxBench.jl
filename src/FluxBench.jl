@@ -4,8 +4,8 @@ using Flux, Metalhead, ObjectDetector
 using Flux3D
 using FluxArchitectures
 
-# using DiffEqFlux
-# using OrdinaryDiffEq, StochasticDiffEq, Distributions
+using DiffEqFlux
+using OrdinaryDiffEq, StochasticDiffEq, Distributions
 using BenchmarkTools, TimerOutputs
 using HTTP, JSON, FileIO
 using Flux.CUDA
@@ -19,7 +19,7 @@ include("utils.jl")
 include("packages/objectdetector.jl")
 include("packages/transformers.jl")
 include("packages/flux3d.jl")
-# include("packages/fluxarchitectures.jl")
+include("packages/fluxarchitectures.jl")
 include("packages/diffeqflux.jl")
 include("bench.jl")
 
