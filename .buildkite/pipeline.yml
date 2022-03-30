@@ -1,5 +1,6 @@
 steps:
   - label: "Benchmarks"
+    priority: 1
     plugins:
       - JuliaCI/julia#v1:
           version: 1.7
@@ -25,6 +26,7 @@ steps:
         build.branch =~ /^master$$/
 
   - label: "Benchmarks (Trial)"
+    priority: 1
     plugins:
       - JuliaCI/julia#v1:
           version: 1.7
