@@ -68,55 +68,43 @@ function diffeqflux_add_neuralsde(batchsize=16, ntrajectories=100, df_group=addg
 end
 
 function diffeqflux_add_ffjord(ndims=2, batchsize=256, df_group=addgroup!(SUITE, "DiffEqFlux_FFJORD"))
-    # nn = Chain(
-    #     Dense(ndims, ndims * 8, tanh),
-    #     Dense(ndims * 8, ndims * 8, tanh),
-    #     Dense(ndims * 8, ndims * 8, tanh),
-    #     Dense(ndims * 8, ndims),
-    # )
-    # cnf_ffjord = f -> FFJORD(f, (0.0f0, 1.0f0), Tsit5(); monte_carlo=true)
-    # ffjordsol_to_logpx(x) = -mean(x[1])[1]
+    nn = Chain(
+        Dense(ndims, ndims * 8, tanh),
+        Dense(ndims * 8, ndims * 8, tanh),
+        Dense(ndims * 8, ndims * 8, tanh),
+        Dense(ndims * 8, ndims),
+    )
+    cnf_ffjord = f -> FFJORD(f, (0.0f0, 1.0f0), Tsit5(); monte_carlo=true)
+    ffjordsol_to_logpx(x) = -mean(x[1])[1]
 
-    # ip = rand(Float32, ndims, batchsize)
-    # e = randn(eltype(ip), size(ip))
+    ip = rand(Float32, ndims, batchsize)
+    e = randn(eltype(ip), size(ip))
 
-    # nsamples = batchsize
-    # function sample_from_learned_model(cnf_ffjord)
-    #     pz = cnf_ffjord.basedist
-    #     Z_samples = cu(rand(pz, nsamples))
-    #     e = cu(randn(eltype(Z_samples), size(Z_samples)))
-    #     ffjord_ = (u, p, t) -> DiffEqFlux.ffjord(u, p, t, cnf_ffjord.re, e; regularize=false, monte_carlo=false)
-    #     _z = Zygote.@ignore similar(Z_samples, 1, size(Z_samples, 2))
-    #     Zygote.@ignore fill!(_z, 0.0f0)
-    #     prob = ODEProblem{false}(ffjord_, vcat(Z_samples, _z), (1.0, 0.0), cnf_ffjord.p)
-    #     return solve(prob, cnf_ffjord.args...; sensealg=InterpolatingAdjoint(), cnf_ffjord.kwargs...)[
-    #         1:(end - 1), :, end
-    #     ]
-    # end
+    df_group["DiffEqFlux_Forward_Pass_FFJORD_with_batchsize_$(batchsize)_and_ndims_$(ndims)"] =
+        b = @benchmarkable(
+            CUDA.@sync ffjordsol_to_logpx(model(gip, model.p, e_gpu)), setup =
+                (nn_gpu = gpu($nn);
+                model = cnf_ffjord(nn_gpu);
+                gip = gpu($ip);
+                e_gpu = gpu($e)), teardown = (GC.gc(); CUDA.reclaim())
+        )
 
-    # df_group["DiffEqFlux_Forward_Pass_FFJORD_with_batchsize_$(batchsize)_and_ndims_$(ndims)"] =
-    #     b = @benchmarkable(
-    #         CUDA.@sync ffjordsol_to_logpx(model(gip, model.p, e_gpu)), setup =
-    #             (nn_gpu = gpu($nn);
-    #             model = cnf_ffjord(nn_gpu);
-    #             gip = gpu($ip);
-    #             e_gpu = gpu($e)), teardown = (GC.gc(); CUDA.reclaim())
-    #     )
+    df_group["DiffEqFlux_Backward_Pass_FFJORD_with_batchsize_$(batchsize)_and_ndims_$(ndims)"] =
+        b = @benchmarkable(
+            CUDA.@sync gradient((m, x) -> sum(ffjordsol_to_logpx(m(x, m.p, e_gpu))), model, gip), setup =
+                (nn_gpu = gpu($nn);
+                model = cnf_ffjord(nn_gpu);
+                gip = gpu($ip);
+                e_gpu = gpu($e)), teardown = (GC.gc(); CUDA.reclaim())
+        )
 
-    # df_group["DiffEqFlux_Backward_Pass_FFJORD_with_batchsize_$(batchsize)_and_ndims_$(ndims)"] =
-    #     b = @benchmarkable(
-    #         CUDA.@sync gradient((m, x) -> sum(ffjordsol_to_logpx(m(x, m.p, e_gpu))), model, gip), setup =
-    #             (nn_gpu = gpu($nn);
-    #             model = cnf_ffjord(nn_gpu);
-    #             gip = gpu($ip);
-    #             e_gpu = gpu($e)), teardown = (GC.gc(); CUDA.reclaim())
-    #     )
+    df_group["DiffEqFlux_Sampling_FFJORD_with_nsamples_$(nsamples)_and_ndims_$(ndims)"] =
+        b = @benchmarkable(
+            CUDA.@sync DiffEqFlux.backward_ffjord(model, batchsize, model.p, e_gpu), setup =
+                (nn_gpu = gpu($nn);
+                model = gpu($cnf_ffjord(nn_gpu));
+                e_gpu = gpu($e)), teardown = (GC.gc(); CUDA.reclaim())
+        )
 
-    # return df_group["DiffEqFlux_Sampling_FFJORD_with_nsamples_$(nsamples)_and_ndims_$(ndims)"] =
-    #     b = @benchmarkable(
-    #         fw(sample_from_learned_model, model),
-    #         setup = (nn_gpu = gpu($nn);
-    #         model = gpu($cnf_ffjord(nn_gpu))),
-    #         teardown = (GC.gc(); CUDA.reclaim())
-    #     )
+    return nothing
 end
