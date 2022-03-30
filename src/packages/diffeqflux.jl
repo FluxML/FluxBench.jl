@@ -101,7 +101,7 @@ function diffeqflux_add_ffjord(ndims=2, batchsize=256, df_group=addgroup!(SUITE,
         fw(model, gip),
         setup = (nn_gpu = gpu($nn);
         e_gpu = gpu($e);
-        model = ffjord_sampling(nn_gpu, e_gpu);
+        model = $ffjord_sampling(nn_gpu, e_gpu);
         gip = gpu($ip)),
         teardown = (GC.gc(); CUDA.reclaim())
     )
