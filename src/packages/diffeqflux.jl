@@ -80,7 +80,7 @@ function diffeqflux_add_ffjord(ndims=2, batchsize=256, df_group=addgroup!(SUITE,
     ip = rand(Float32, ndims, batchsize)
     e = randn(eltype(ip), size(ip))
 
-    df_group["DiffEqFlux_Forward_Pass_FFJORD_with_batchsize_$(batchsize)_and_ndims_$(ndims)"] =
+    df_group["DiffEqFlux_FWD_FFJORD_with_bsz_$(batchsize)_ndims_$(ndims)"] =
         b = @benchmarkable(
             CUDA.@sync ffjordsol_to_logpx(model(gip, model.p, e_gpu)), setup =
                 (nn_gpu = gpu($nn);
@@ -89,7 +89,7 @@ function diffeqflux_add_ffjord(ndims=2, batchsize=256, df_group=addgroup!(SUITE,
                 e_gpu = gpu($e)), teardown = (GC.gc(); CUDA.reclaim())
         )
 
-    df_group["DiffEqFlux_Backward_Pass_FFJORD_with_batchsize_$(batchsize)_and_ndims_$(ndims)"] =
+    df_group["DiffEqFlux_BWD_FFJORD_with_bsz_$(batchsize)_ndims_$(ndims)"] =
         b = @benchmarkable(
             CUDA.@sync gradient((m, x) -> sum(ffjordsol_to_logpx(m(x, m.p, e_gpu))), model, gip), setup =
                 (nn_gpu = gpu($nn);
@@ -98,7 +98,7 @@ function diffeqflux_add_ffjord(ndims=2, batchsize=256, df_group=addgroup!(SUITE,
                 e_gpu = gpu($e)), teardown = (GC.gc(); CUDA.reclaim())
         )
 
-    df_group["DiffEqFlux_Sampling_FFJORD_with_nsamples_$(nsamples)_and_ndims_$(ndims)"] =
+    df_group["DiffEqFlux_Samp_FFJORD_with_bsz_$(batchsize)_ndims_$(ndims)"] =
         b = @benchmarkable(
             CUDA.@sync DiffEqFlux.backward_ffjord(model, batchsize, model.p, e_gpu), setup =
                 (nn_gpu = gpu($nn);
