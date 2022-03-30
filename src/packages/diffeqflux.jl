@@ -14,23 +14,21 @@ function diffeqflux_add_neuralode(
 
     ip = rand(Float32, 784, batchsize)
 
-    df_group["DiffEqFlux_FWD_NODE_atol_$(abstol)_rtol_$(reltol)_bsz_$(batchsize)_$(solver)"] =
-        b = @benchmarkable(
-            fw(model, gip),
-            setup = (nn_gpu = gpu($nn);
-            model = gpu(Chain($down, $nn_ode(nn_gpu), $diffeqarray_to_array, $fc));
-            gip = gpu($ip)),
-            teardown = (GC.gc(); CUDA.reclaim())
-        )
+    df_group["DiffEqFlux_FWD_NODE_atol_$(abstol)_rtol_$(reltol)_bsz_$(batchsize)_$(solver)"] = @benchmarkable(
+        fw(model, gip),
+        setup = (nn_gpu = gpu($nn);
+        model = gpu(Chain($down, $nn_ode(nn_gpu), $diffeqarray_to_array, $fc));
+        gip = gpu($ip)),
+        teardown = (GC.gc(); CUDA.reclaim())
+    )
 
-    df_group["DiffEqFlux_BWD_NODE_atol_$(abstol)_rtol_$(reltol)_bsz_$(batchsize)_$(solver)"] =
-        b = @benchmarkable(
-            bw(model, gip),
-            setup = (nn_gpu = gpu($nn);
-            model = gpu(Chain($down, $nn_ode(nn_gpu), $diffeqarray_to_array, $fc));
-            gip = gpu($ip)),
-            teardown = (GC.gc(); CUDA.reclaim())
-        )
+    df_group["DiffEqFlux_BWD_NODE_atol_$(abstol)_rtol_$(reltol)_bsz_$(batchsize)_$(solver)"] = @benchmarkable(
+        bw(model, gip),
+        setup = (nn_gpu = gpu($nn);
+        model = gpu(Chain($down, $nn_ode(nn_gpu), $diffeqarray_to_array, $fc));
+        gip = gpu($ip)),
+        teardown = (GC.gc(); CUDA.reclaim())
+    )
 
     return nothing
 end
@@ -44,25 +42,23 @@ function diffeqflux_add_neuralsde(batchsize=16, ntrajectories=100, df_group=addg
 
     ip = repeat(rand(Float32, 2, batchsize); inner=(1, ntrajectories))
 
-    df_group["DiffEqFlux_FWD_NSDE_bsize_$(batchsize)_ntraj_$(ntrajectories)"] =
-        b = @benchmarkable(
-            fw(model, gip),
-            setup = (drift_gpu = gpu($drift);
-            diffusion_gpu = gpu($diffusion);
-            model = Chain($nn_sde(drift_gpu, diffusion_gpu), $sdesol_to_array);
-            gip = gpu($ip)),
-            teardown = (GC.gc(); CUDA.reclaim())
-        )
+    df_group["DiffEqFlux_FWD_NSDE_bsize_$(batchsize)_ntraj_$(ntrajectories)"] = @benchmarkable(
+        fw(model, gip),
+        setup = (drift_gpu = gpu($drift);
+        diffusion_gpu = gpu($diffusion);
+        model = Chain($nn_sde(drift_gpu, diffusion_gpu), $sdesol_to_array);
+        gip = gpu($ip)),
+        teardown = (GC.gc(); CUDA.reclaim())
+    )
 
-    df_group["DiffEqFlux_BWD_NSDE_bsize_$(batchsize)_ntraj_$(ntrajectories)"] =
-        b = @benchmarkable(
-            bw(model, gip),
-            setup = (drift_gpu = gpu($drift);
-            diffusion_gpu = gpu($diffusion);
-            model = gpu(Chain($nn_sde(drift_gpu, diffusion_gpu), $sdesol_to_array));
-            gip = gpu($ip)),
-            teardown = (GC.gc(); CUDA.reclaim())
-        )
+    df_group["DiffEqFlux_BWD_NSDE_bsize_$(batchsize)_ntraj_$(ntrajectories)"] = @benchmarkable(
+        bw(model, gip),
+        setup = (drift_gpu = gpu($drift);
+        diffusion_gpu = gpu($diffusion);
+        model = gpu(Chain($nn_sde(drift_gpu, diffusion_gpu), $sdesol_to_array));
+        gip = gpu($ip)),
+        teardown = (GC.gc(); CUDA.reclaim())
+    )
 
     return nothing
 end
@@ -74,37 +70,41 @@ function diffeqflux_add_ffjord(ndims=2, batchsize=256, df_group=addgroup!(SUITE,
         Dense(ndims * 8, ndims * 8, tanh),
         Dense(ndims * 8, ndims),
     )
-    cnf_ffjord = f -> FFJORD(f, (0.0f0, 1.0f0), Tsit5(); monte_carlo=true)
-    ffjordsol_to_logpx(x) = -mean(x[1])[1]
+    function cnf_ffjord(f, e)
+        ffjord = FFJORD(f, (0.0f0, 1.0f0), Tsit5(); monte_carlo=true)
+        return x -> first(ffjord(x, ffjord.p, e))
+    end
+
+    function ffjord_sampling(f, e)
+        model = FFJORD(f, (0.0f0, 1.0f0), Tsit5(); monte_carlo=true)
+        return _ -> DiffEqFlux.backward_ffjord(model, batchsize, model.p, e)
+    end
 
     ip = rand(Float32, ndims, batchsize)
     e = randn(eltype(ip), size(ip))
 
-    df_group["DiffEqFlux_FWD_FFJORD_with_bsz_$(batchsize)_ndims_$(ndims)"] =
-        b = @benchmarkable(
-            CUDA.@sync ffjordsol_to_logpx(model(gip, model.p, e_gpu)), setup =
-                (nn_gpu = gpu($nn);
-                model = cnf_ffjord(nn_gpu);
-                gip = gpu($ip);
-                e_gpu = gpu($e)), teardown = (GC.gc(); CUDA.reclaim())
-        )
+    df_group["DiffEqFlux_FWD_FFJORD_with_bsz_$(batchsize)_ndims_$(ndims)"] = @benchmarkable(
+        fw(model, gip), setup = (nn_gpu = gpu($nn);
+        e_gpu = gpu($e);
+        model = cnf_ffjord($nn_gpu, $e_gpu);
+        gip = gpu($ip)), teardown = (GC.gc(); CUDA.reclaim())
+    )
 
-    df_group["DiffEqFlux_BWD_FFJORD_with_bsz_$(batchsize)_ndims_$(ndims)"] =
-        b = @benchmarkable(
-            CUDA.@sync gradient((m, x) -> sum(ffjordsol_to_logpx(m(x, m.p, e_gpu))), model, gip), setup =
-                (nn_gpu = gpu($nn);
-                model = cnf_ffjord(nn_gpu);
-                gip = gpu($ip);
-                e_gpu = gpu($e)), teardown = (GC.gc(); CUDA.reclaim())
-        )
+    df_group["DiffEqFlux_BWD_FFJORD_with_bsz_$(batchsize)_ndims_$(ndims)"] = @benchmarkable(
+        bw(model, gip), setup = (nn_gpu = gpu($nn);
+        e_gpu = gpu($e);
+        model = cnf_ffjord($nn_gpu, $e_gpu);
+        gip = gpu($ip)), teardown = (GC.gc(); CUDA.reclaim())
+    )
 
-    df_group["DiffEqFlux_Samp_FFJORD_with_bsz_$(batchsize)_ndims_$(ndims)"] =
-        b = @benchmarkable(
-            CUDA.@sync DiffEqFlux.backward_ffjord(model, batchsize, model.p, e_gpu), setup =
-                (nn_gpu = gpu($nn);
-                model = gpu($cnf_ffjord(nn_gpu));
-                e_gpu = gpu($e)), teardown = (GC.gc(); CUDA.reclaim())
-        )
+    df_group["DiffEqFlux_Samp_FFJORD_with_bsz_$(batchsize)_ndims_$(ndims)"] = @benchmarkable(
+        fw(model, gip),
+        setup = (nn_gpu = gpu($nn);
+        e_gpu = gpu($e);
+        model = ffjord_sampling($nn_gpu, $e_gpu);
+        gip = gpu($ip)),
+        teardown = (GC.gc(); CUDA.reclaim())
+    )
 
     return nothing
 end
