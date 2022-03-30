@@ -11,6 +11,7 @@ Zygote = "0.6"
 [deps]
 BenchmarkCI = "20533458-34a3-403d-a444-e18f38190b5b"
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+DiffEqFlux = "aae7a2af-3d4f-5e19-a356-7da93b79d9d0"
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
