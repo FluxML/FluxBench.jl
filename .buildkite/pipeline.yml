@@ -13,8 +13,10 @@ steps:
       julia --project -e '
         ENV["CODESPEED_ENVIRONMENT"] = "FluxBench" # ENV["BUILDKITE_AGENT_NAME"]
         println("Preparing Environment")
-        using Pkg
-        Pkg.instantiate()
+        using Pkg; Pkg.add("PyCall");
+        Pkg.instantiate(); ENV["PYTHON"] = ""; Pkg.build();
+        using PyCall;
+        pyimport_conda("scipy", "scipy")
         println("Starting Benchmarks")
         using FluxBench
         FluxBench.submit(true)'
@@ -38,8 +40,10 @@ steps:
       julia --project -e '
         ENV["CODESPEED_ENVIRONMENT"] = "FluxBench" # ENV["BUILDKITE_AGENT_NAME"]
         println("Preparing Environment")
-        using Pkg
-        Pkg.instantiate()
+        using Pkg; Pkg.add("PyCall");
+        Pkg.instantiate(); ENV["PYTHON"] = ""; Pkg.build();
+        using PyCall;
+        pyimport_conda("scipy", "scipy")
         println("Starting Benchmarks")
         using FluxBench, Flux, CUDA
         using CUDA.NVML
