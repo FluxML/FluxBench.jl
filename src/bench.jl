@@ -9,7 +9,7 @@ function benchmark_cu(model, batchsize = 64, config = nothing, group = nothing)
   resnet = model
   ip = rand(Float32, 224, 224, 3, batchsize)
 
-  group["Forward_Pass_$(typeof(model))_$(config)_with_batchsize_$(batchsize)"] = b = @benchmarkable(
+  group["Forw_$(typeof(model))_$(config)_batch_$(batchsize)"] = b = @benchmarkable(
         fw(gresnet, gip),
         setup = (gresnet = $resnet |> gpu;
                gip = gpu($ip)),
@@ -20,7 +20,7 @@ function benchmark_bw_cu(model, batchsize = 64, config = nothing, group = nothin
   resnet = model
   ip = rand(Float32, 224, 224, 3, batchsize)
 
-  group["Backwards_Pass_$(typeof(model))_$(config)_with_batchsize_$(batchsize)"] = b = @benchmarkable(
+  group["Back_$(typeof(model))_$(config)_batch_$(batchsize)"] = b = @benchmarkable(
         bw(gresnet, gip),
         setup = (gresnet = $resnet |> gpu;
    	       gip = gpu($ip)),
