@@ -16,12 +16,12 @@ function transformer_add_trf(::Type{Transformer}, layern, batchn,
     encoder = Chain((Transformer(hidden, head, intermediate; act = gelu) for i = 1:layern)...)
     ip = randn(512, 100, batchn)
 
-    trf_group["Transformers_Forward_Pass_nlayer_$(layern)_nbatch_$(batchn)"] = @benchmarkable(
+    trf_group["Forw_nlayer_$(layern)_nbatch_$(batchn)"] = @benchmarkable(
         fw(model, gip), setup = (model = gpu($encoder); gip = gpu($ip)),
         teardown = (GC.gc(); CUDA.reclaim())
     )
 
-    trf_group["Transformers_Backward_Pass_nlayer_$(layern)_nbatch_$(batchn)"] = @benchmarkable(
+    trf_group["Back_nlayer_$(layern)_nbatch_$(batchn)"] = @benchmarkable(
         bw(model, gip), setup = (model = gpu($encoder); gip = gpu($ip)),
         teardown = (GC.gc(); CUDA.reclaim())
     )
@@ -42,12 +42,12 @@ function transformer_add_trf(::Type{Bert}, batchn,
         segment = fill(1, seq_len, batchn)
         ip = (tok = token, segment = segment)
 
-        trf_group["Bert-base-uncased_Forward_Pass_seq_len_$(seq_len)_nbatch_$(batchn)"] = @benchmarkable(
+        trf_group["Bert-base-uncased_Forw_seq_len_$(seq_len)_nbatch_$(batchn)"] = @benchmarkable(
             bhfw(bert_fw, model, gip), setup = (model = $gmodel; gip = gpu($ip)),
             teardown = (GC.gc(); CUDA.reclaim())
         )
 
-        trf_group["Bert-base-uncased_Backward_Pass_seq_len_$(seq_len)_nbatch_$(batchn)"] = @benchmarkable(
+        trf_group["Bert-base-uncased_Back_seq_len_$(seq_len)_nbatch_$(batchn)"] = @benchmarkable(
             bhbw(bert_fw, model, gip), setup = (model = $gmodel; gip = gpu($ip)),
             teardown = (GC.gc(); CUDA.reclaim())
         )
